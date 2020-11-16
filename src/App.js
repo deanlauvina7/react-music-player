@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import './styles/app.scss';
-import data from './util';
+import data from './data';
 // Adding Components
 import Player from './components/Player';
 import Song from './components/Song';
@@ -38,6 +38,7 @@ function App() {
         songInfo={songInfo}
         songs={songs}
         setCurrentSong={setCurrentSong}
+        setSongs={setSongs}
       />
       <Library
         audioRef={audioRef}
