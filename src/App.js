@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import './styles/app.scss';
-import data from './data';
 // Adding Components
 import Player from './components/Player';
 import Song from './components/Song';
 import Library from './components/Library';
 import Nav from './components/Nav';
+import data from './data';
 function App() {
   // Ref
   const audioRef = useRef(null);
@@ -32,6 +32,11 @@ function App() {
       duration,
       animationPercentage: animation,
     });
+  };
+  const songEndHandler = async () => {
+    let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
+    await setCurrentSong(songs[(currentIndex + 1) % songs.length]);
+    if (isPlaying) audioRef.current.play();
   };
   return (
     <div className="App">
@@ -60,7 +65,8 @@ function App() {
         onTimeUpdate={timeUpdateHandler}
         onLoadedMetadata={timeUpdateHandler}
         ref={audioRef}
-        src={currentSong.audio}></audio>
+        src={currentSong.audio}
+        onEnded={songEndHandler}></audio>
     </div>
   );
 }
