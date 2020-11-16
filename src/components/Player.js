@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlay,
   faAngleLeft,
   faAngleRight,
   faPause,
+  faVolumeDown,
 } from '@fortawesome/free-solid-svg-icons';
+import userEvent from '@testing-library/user-event';
 
 const Player = ({
   audioRef,
@@ -18,10 +20,10 @@ const Player = ({
   setCurrentSong,
   setSongs,
 }) => {
-  // Use effect
-  useEffect(() => {
+  const [activeVolume, setActiveVolume] = useState(false);
+  const activeLibraryHandler = (nextPrev) => {
     const newSongs = songs.map((song) => {
-      if (song.id === currentSong.id) {
+      if (song.id === nextPrev.id) {
         return {
           ...song,
           active: true,
@@ -34,7 +36,7 @@ const Player = ({
       }
     });
     setSongs(newSongs);
-  }, [currentSong]);
+  };
 
   // Event handlers
   const playSongHandler = () => {
@@ -59,6 +61,7 @@ const Player = ({
     let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
     if (direction === 'skip-forward') {
       await setCurrentSong(songs[(currentIndex + 1) % songs.length]);
+      activeLibraryHandler(songs[(currentIndex + 1) % songs.length]);
     }
     if (direction === 'skip-back') {
       if ((currentIndex - 1) % songs.length === -1) {
@@ -67,8 +70,15 @@ const Player = ({
         return;
       }
       await setCurrentSong(songs[(currentIndex - 1) % songs.length]);
+      activeLibraryHandler(songs[(currentIndex - 1) % songs.length]);
     }
     if (isPlaying) audioRef.current.play();
+  };
+
+  const changeVolume = (e) => {
+    let value = e.target.value;
+    audioRef.current.volume = value;
+    setSongInfo({ ...songInfo, volume: value });
   };
   // Add the styles
   const trackAnim = {
@@ -113,6 +123,20 @@ const Player = ({
           size="2x"
           icon={faAngleRight}
         />
+        <FontAwesomeIcon
+          onClick={() => setActiveVolume(!activeVolume)}
+          icon={faVolumeDown}
+        />
+        {activeVolume && (
+          <input
+            onChange={changeVolume}
+            value={songInfo.volume}
+            max="1"
+            min="0"
+            step="0.01"
+            type="range"
+          />
+        )}
       </div>
     </div>
   );

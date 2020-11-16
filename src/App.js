@@ -17,6 +17,7 @@ function App() {
     currentTime: 0,
     duration: 0,
     animationPercentage: 0,
+    volume: 0,
   });
   const [libraryStatus, setLibraryStatus] = useState(false);
   const timeUpdateHandler = (e) => {
@@ -31,6 +32,7 @@ function App() {
       currentTime: current,
       duration,
       animationPercentage: animation,
+      volume: e.target.volume,
     });
   };
   const songEndHandler = async () => {
